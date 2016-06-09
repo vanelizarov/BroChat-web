@@ -1,0 +1,30 @@
+/*
+#messages-container {
+    overflow-y: scroll;
+    height: 500px;
+}
+
+#preloader-container {
+    display: block;
+    width: 50px;
+    height: 50px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+}*/
+
+/*.input-field input[type=text]:focus + label,
+.input-field input[type=email]:focus + label,
+.input-field input[type=password]:focus + label {
+    color: #64b5f6;
+}*/
+
+/*.input-field input[type=email],
+.input-field input[type=password],*/
+.input-field input[type=text]:focus,
+.input-field input[type=email]:focus,
+.input-field input[type=password]:focus {
+    border-bottom: 1px solid #64b5f6;
+    box-shadow: 0 1px 0 0 #64b5f6;
+}

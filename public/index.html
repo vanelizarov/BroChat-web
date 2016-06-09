@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html ng-app="BroChat">
+    <head>
+        <meta charset="utf-8">
+
+        <link rel="stylesheet" href="http://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="css/materialize.min.css" media="screen,projection" title="no title" charset="utf-8">
+        <link rel="stylesheet" href="css/main.css" media="screen" title="no title" charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="js/angular.min.js" charset="utf-8"></script>
+        <script src="js/angular-route.js" charset="utf-8"></script>
+
+        <title>BroChat</title>
+    </head>
+    <body ng-controller="AppController">
+
+        <div ng-view></div>
+
+        <script src="js/jquery-2.2.4.js" charset="utf-8"></script>
+        <script src="js/materialize.min.js" charset="utf-8"></script>
+        <script src="js/firebase.js" charset="utf-8"></script>
+
+        <script type="text/javascript">
+
+            var config = {
+                apiKey: "AIzaSyB_xwOeWJv1F-gMtxJRSkaoA4KmI9vr6yY",
+                authDomain: "brochat-d4e6f.firebaseapp.com",
+                databaseURL: "https://brochat-d4e6f.firebaseio.com",
+                storageBucket: "brochat-d4e6f.appspot.com"
+            };
+
+            firebase.initializeApp(config);
+
+        </script>
+
+        <script src="app.js" charset="utf-8"></script>
+
+
+    </body>
+</html>
