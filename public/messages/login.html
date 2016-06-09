@@ -1,4 +1,4 @@
-<div class="container" id="login-container" ng-controller="LoginController as login">
+<div class="container" id="login-container" ng-controller="LoginController">
         <div class="row">
             <div class="col s12 m8 l4 offset-m2 offset-l4">
                 <div class="card grey lighten-5">
@@ -11,31 +11,25 @@
                     <div class="card-content black-text">
                         <div class="row">
                             <form class="col s12" id="login-form">
-                                <!-- <div class="input-field col s12">
-                                    <input form="login-form" type="text" name="username" class="validate">
-                                    <label for="text">Username</label>
-                                </div> -->
 
                                 <div class="input-field col s12">
-                                    <input form="login-form" type="email" name="email" class="validate">
+                                    <input type="email" class="validate" ng-model="email">
                                     <label for="email">Email</label>
                                 </div>
 
                                 <div class="input-field col s12">
-                                    <input form="login-form" type="password" name="password" class="validate">
+                                    <input type="password" class="validate" ng-model="password">
                                     <label for="password">Password</label>
                                 </div>
 
                             </form>
                         </div>
+                        
                         <div class="row">
-                            <button class="btn waves-effect waves-light blue lighten-2 col s6 offset-s3" id="sign-in-button">Sign in</button>
+                            <button class="btn waves-effect waves-light blue lighten-2 col s6 offset-s3" ng-click="signInClicked();">Sign in</button>
                         </div>
                     </div>
 
-                    <!-- <div class="card-action">
-                        <a href="" id="sign-in-button">Sign In</a>
-                    </div> -->
                 </div>
             </div>
         </div>

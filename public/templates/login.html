@@ -1,0 +1,44 @@
+<div class="container" id="login-container" ng-controller="LoginController">
+        <div class="row">
+            <div class="col s12 m8 l4 offset-m2 offset-l4">
+                <div class="card grey lighten-5">
+
+                    <div class="card-image">
+                        <img src="assets/beer-alt.jpeg" alt="Beer" />
+                        <span class="card-title">Authenticate, Bro</span>
+                    </div>
+
+                    <div class="card-content black-text">
+                        <div class="row">
+                            <form class="col s12" id="login-form" action="/">
+                                <!-- <div class="input-field col s12">
+                                    <input form="login-form" type="text" name="username" class="validate">
+                                    <label for="text">Username</label>
+                                </div> -->
+
+                                <div class="input-field col s12">
+                                    <input form="login-form" type="email" class="validate" ng-model="email">
+                                    <label for="email">Email</label>
+                                </div>
+
+                                <div class="input-field col s12">
+                                    <input form="login-form" type="password" class="validate" ng-model="password">
+                                    <label for="password">Password</label>
+                                </div>
+
+                                <button class="btn waves-effect waves-light blue lighten-2 col s6 offset-s3" ng-click="signInClicked($event)">Sign in</button>
+
+                            </form>
+                        </div>
+                        <!-- <div class="row">
+
+                        </div> -->
+                    </div>
+
+                    <!-- <div class="card-action">
+                        <a href="" id="sign-in-button">Sign In</a>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+</div>
