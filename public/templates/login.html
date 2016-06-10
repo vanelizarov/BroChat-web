@@ -11,22 +11,18 @@
                     <div class="card-content black-text">
                         <div class="row">
                             <form class="col s12" id="login-form" action="/">
-                                <!-- <div class="input-field col s12">
-                                    <input form="login-form" type="text" name="username" class="validate">
-                                    <label for="text">Username</label>
-                                </div> -->
-
+                                
                                 <div class="input-field col s12">
-                                    <input form="login-form" type="email" class="validate" ng-model="email">
+                                    <input type="email" class="validate" ng-model="email">
                                     <label for="email">Email</label>
                                 </div>
 
                                 <div class="input-field col s12">
-                                    <input form="login-form" type="password" class="validate" ng-model="password">
+                                    <input type="password" class="validate" ng-model="password">
                                     <label for="password">Password</label>
                                 </div>
 
-                                <button class="btn waves-effect waves-light blue lighten-2 col s6 offset-s3" ng-click="signInClicked($event)">Sign in</button>
+                                <button class="btn waves-effect waves-light blue lighten-2 col s6 offset-s3" id="sign-in-button">Sign in</button>
 
                             </form>
                         </div>
@@ -35,9 +31,7 @@
                         </div> -->
                     </div>
 
-                    <!-- <div class="card-action">
-                        <a href="" id="sign-in-button">Sign In</a>
-                    </div> -->
+                    
                 </div>
             </div>
         </div>

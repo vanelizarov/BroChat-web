@@ -5,8 +5,8 @@ app.config(function($routeProvider) {
     $routeProvider
     .when('/', {
         resolve: {
-            "check": function($location, $rootScope) {
-                if ($rootScope.loggedIn) {
+            "check": function($location) {
+                if (firebase.auth().currentUser) {
                     //console.log("here");
                     $location.path('/messages');
                 }
@@ -16,8 +16,8 @@ app.config(function($routeProvider) {
     })
     .when('/messages', {
         resolve: {
-            "check": function($location, $rootScope) {
-                if (!$rootScope.loggedIn) {
+            "check": function($location) {
+                if (!firebase.auth().currentUser) {
                     $location.path('/');
                 }
             }
@@ -29,20 +29,41 @@ app.config(function($routeProvider) {
     });
 });
 
+app.controller('NavigationController', function($scope, $location) {
+
+    if (!firebase.auth().currentUser) {
+        $(".sign-out").addClass('disabled');
+    }
+
+    $(".button-collapse").sideNav();
+
+    $(".sign-out").click(function(event) {
+        firebase.auth().signOut().then(function() {
+            $location.path('/');
+            $scope.$apply();
+            $(".sign-out").addClass('disabled');
+        }, function(error) {
+            console.log('Error signinng out: ' + error);
+        });
+    });
+
+});
+
 app.controller('LoginController', function($scope, $location, $rootScope) {
 
-    // $("input").keypress(function(event) {
-    //     if (event.which == 13) {
-    //         event.preventDefault();
-    //         getInputDataAndContinue();
-    //     }
-    // });
-    //
-    // $("#sign-in-button").click(function(event) {
-    //     event.preventDefault();
-    //     // console.log("clicked");
-    //
-    // });
+     $("input").keypress(function(event) {
+         if (event.which == 13) {
+             event.preventDefault();
+             $scope.signInClicked();
+         }
+     });
+
+     $("#sign-in-button").click(function(event) {
+         event.preventDefault();
+         // console.log("clicked");
+	     $scope.signInClicked();
+
+     });
 
 
     function checkInputData(email, password) {
@@ -59,12 +80,12 @@ app.controller('LoginController', function($scope, $location, $rootScope) {
 
         if (user) {
             console.log('onAuthStateChanged: logged in');
-            $rootScope.loggedIn = true;
-            $rootScope.email = $scope.email; //$rootScope
+            $rootScope.email = user.email; //$rootScope
             $location.path('/messages');
+	        $scope.$apply();
+            $(".sign-out").removeClass('disabled');
         } else {
             console.log('onAuthStateChanged: not logged in');
-            $rootScope.loggedIn = false;
         }
     });
 
@@ -87,15 +108,72 @@ app.controller('LoginController', function($scope, $location, $rootScope) {
 
 });
 
-
-
-
 app.controller('MessagesController', function($scope, $rootScope) {
 
+    $scope.messages = [];
+    $scope.senderId = $rootScope.email; //firebase.auth().currentUser;
     var usersRef = firebase.database().ref('users');
     var messagesRef = firebase.database().ref('messages');
 
-    var currentUser = firebase.auth().currentUser;
+    usersRef.once('value').then(function(data) {
+        $.each(data.val(), function(_key, _value) {
+            $.each(_value, function(v_key, v_value) {
+                if ($scope.senderId === v_value) {
+                    $scope.username = _value.username;
+                    console.log("Found username: " + $scope.username);
+                    observeMessages();
+                    return;
+                }
+
+                // TODO: grep
+                // $scope.username = $.grep(_value, function(value) {
+                // });
+
+
+            });
+        });
+
+    });
+
+    function observeMessages() {
+
+        console.log("Observing messages");
+        messagesRef.on('child_added', function(data) {
+
+            var dateSent = data.val().dateSent;
+            var displayName = data.val().displayName;
+            var senderId = data.val().senderId;
+            var text = data.val().text;
+
+            var message = {
+                uid: data.key,
+                dateSent: dateSent,
+                displayName: displayName,
+                senderId: senderId,
+                text: text
+            };
+
+            $scope.messages.push(message);
+            $scope.$apply();
+            $("ul.collection").animate({
+                        scrollTop: $("ul.collection").get(0).scrollHeight
+                    },
+                    500
+            );
+        });
+
+        messagesRef.on('child_removed', function(data) {
+
+            $scope.messages = $.grep($scope.messages, function(value) {
+                return value.uid !== data.key;
+            });
+
+            $scope.$apply();
+
+        });
+
+    };
+
 
 });
 
