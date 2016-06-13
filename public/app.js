@@ -2,6 +2,7 @@
 var app = angular.module('BroChat', ['ngRoute']);
 
 app.config(function($routeProvider) {
+
     $routeProvider
     .when('/', {
         resolve: {
@@ -35,7 +36,9 @@ app.controller('NavigationController', function($scope, $location) {
         $(".sign-out").addClass('disabled');
     }
 
-    $(".button-collapse").sideNav();
+    $(".button-collapse").sideNav({
+        closeOnClick: true
+    });
 
     $(".sign-out").click(function(event) {
         firebase.auth().signOut().then(function() {
@@ -54,14 +57,14 @@ app.controller('LoginController', function($scope, $location, $rootScope) {
      $("input").keypress(function(event) {
          if (event.which == 13) {
              event.preventDefault();
-             $scope.signInClicked();
+             signInClicked();
          }
      });
 
      $("#sign-in-button").click(function(event) {
          event.preventDefault();
          // console.log("clicked");
-	     $scope.signInClicked();
+	     signInClicked();
 
      });
 
@@ -89,7 +92,7 @@ app.controller('LoginController', function($scope, $location, $rootScope) {
         }
     });
 
-    $scope.signInClicked = function() {
+    function signInClicked() {
         //$event.stopPropagation();
 
         console.log("Checking input data: " + $scope.email + " " + $scope.password);
@@ -110,6 +113,14 @@ app.controller('LoginController', function($scope, $location, $rootScope) {
 
 app.controller('MessagesController', function($scope, $rootScope) {
 
+    $scope.messageText = '';
+
+    $("#message-text").focus();
+
+    if ($("#message-text") === '') {
+        $("#send-button").addClass('disabled');
+    }
+
     $scope.messages = [];
     $scope.senderId = $rootScope.email; //firebase.auth().currentUser;
     var usersRef = firebase.database().ref('users');
@@ -129,15 +140,27 @@ app.controller('MessagesController', function($scope, $rootScope) {
                 // $scope.username = $.grep(_value, function(value) {
                 // });
 
-
             });
         });
 
     });
 
+    function addMessage(uid, dateSent, displayName, senderId, text) {
+        var message = {
+            uid: uid,
+            dateSent: dateSent,
+            displayName: displayName,
+            senderId: senderId,
+            text: text
+        };
+        $scope.messages.push(message);
+        $scope.$apply();
+    };
+
     function observeMessages() {
 
         console.log("Observing messages");
+
         messagesRef.on('child_added', function(data) {
 
             var dateSent = data.val().dateSent;
@@ -145,186 +168,65 @@ app.controller('MessagesController', function($scope, $rootScope) {
             var senderId = data.val().senderId;
             var text = data.val().text;
 
-            var message = {
-                uid: data.key,
-                dateSent: dateSent,
-                displayName: displayName,
-                senderId: senderId,
-                text: text
-            };
+            addMessage(data.key, dateSent, displayName, senderId, text);
 
-            $scope.messages.push(message);
-            $scope.$apply();
-            $("ul.collection").animate({
-                        scrollTop: $("ul.collection").get(0).scrollHeight
-                    },
-                    500
-            );
+            $("ul.collection").animate({scrollTop: $("ul.collection").get(0).scrollHeight}, 500);
         });
 
         messagesRef.on('child_removed', function(data) {
-
             $scope.messages = $.grep($scope.messages, function(value) {
                 return value.uid !== data.key;
             });
-
             $scope.$apply();
-
         });
 
     };
 
+    function sendCurrentMessage() {
+
+        if (!$scope.messageText == '') {
+            var date = new Date();
+            var dateSent = date.getHours() + ":" + date.getMinutes();
+
+            var messageRef = {
+                dateSent: dateSent,
+                displayName: $scope.username,
+                senderId: $scope.senderId,
+                text: $scope.messageText
+            }
+
+            var uid = firebase.database().ref().child('messages').push().key;
+
+            var updates = {};
+            updates['/messages/' + uid] = messageRef;
+
+            firebase.database().ref().update(updates);
+
+            $scope.messageText = '';
+            $("#message-text").focus();
+            $scope.$apply();
+        } else {
+            Materialize.toast('Empty message cannot be send', 2000);
+            console.log("Empty text cannot be send");
+        }
+
+    };
+
+    $("#send-button").click(function(event) {
+        sendCurrentMessage();
+    });
+
+    $("textarea").keypress(function(event) {
+
+        if (event.ctrlKey && event.which == 13) {
+            event.preventDefault();
+            sendCurrentMessage()
+        }
+
+    });
 
 });
 
-// app.controller('LoginController', function() {
-//     console.log('LoginController');
-//
-//     $("input").keypress(function(event) {
-//         if (event.which == 13) {
-//             event.preventDefault();
-//             getInputDataAndContinue();
-//         }
-//     });
-//
-//     $("#sign-in-button").click(function(event) {
-//         event.preventDefault();
-//         console.log("Clicked sign in");
-//         getInputDataAndContinue();
-//     });
-//
-//     firebase.auth().onAuthStateChanged(function(user) {
-//         if (user) {
-//             console.log("Successfully logged in: ", user.email);
-//             $window.location.href = '/messages';
-//
-//         } else {
-//             console.log("User not logged in.");
-//             Materialize.toast('Not logged in.', 2000);
-//         }
-//     });
-//
-//
-//     function getInputDataAndContinue() {
-//         var email = $("input[name=email]").val();
-//         var password = $("input[name=password]").val();
-//
-//         if (checkInputData(email, password)) {
-//             auth(email, password);
-//         } else {
-//             Materialize.toast('Fill all forms!', 2000);
-//         }
-//     }
-//
-//     function checkInputData(email, password) {
-//         if (email !== "" &&
-//             password !== "") {
-//             return true;
-//         } else {
-//             return false;
-//         }
-//     }
-//
-//     function auth(email, password) {
-//         firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
-//             console.log("Error logging in: ", error.code);
-//         });
-//     }
-//
-// });
-//
-// app.controller('MessagesController', function($scope) {
-//
-//     var usersRef = firebase.database().ref('users');
-//     var messagesRef = firebase.database().ref('messages');
-//
-//     var currentUser = firebase.auth().currentUser;
-//     $scope.username;
-//
-//     $scope.messages = [];
-//
-//     usersRef.on('child_added', function(data) {
-//
-//         var senderId = data.val().senderId;
-//
-//         if (senderId == currentUser.email) {
-//             $scope.username = data.val().username;
-//         }
-//
-//     });
-//
-//     messagesRef.on('child_added', function(data) {
-//
-//         var dateSent = data.val().dateSent;
-//         var displayName = data.val().displayName;
-//         var senderId = data.val().senderId;
-//         var text = data.val().text;
-//
-//         addMessage(dateSent, displayName, senderId, text);
-//
-//     });
-//
-//     function addMessage(dateSent, displayName, senderId, text) {
-//
-//         var message = {
-//             dateSent: dateSent,
-//             displayName: displayName,
-//             senderId: senderId,
-//             text: text
-//         };
-//
-//         $scope.messages.push(message);
-//
-//         // var message = $("<li class=\"collection-item avatar\"></li>");
-//         //
-//         // if (_senderId === senderId) {
-//         //     $(message).addClass("blue lighten-2 white-text");
-//         // }
-//         //
-//         // $(message).load("chat-cell.html", function() {
-//         //     $(message).children(".title:first").text(displayName + " " + dateSent);
-//         //     $(message).children(".message-text:first").text(text);
-//         //     $("#messages-container").append(message);
-//         // });
-//
-//     }
-//
-//
-// })
-//
-// app.config(function($routeProvider, $locationProvider) {
-//
-//     $routeProvider.when('/', {
-//         controller: 'AppController',
-//         asController: 'app',
-//         templateUrl: 'index.html',
-//         redirectTo: function() {
-//
-//             var user = firebase.auth().currentUser;
-//             if (user) {
-//                 return '/messages';
-//             } else {
-//                 return '/login';
-//             }
-//         }
-//     });
-//
-//     $routeProvider.when('/login', {
-//         controller: 'AppController',
-//         templateUrl: 'login/login-view.html'
-//     });
-//
-//     $routeProvider.when('/messages', {
-//         controller: 'AppController',
-//         templateUrl: 'messages/messages-view.html'
-//     });
-//
-//     $locationProvider.html5Mode({
-//         enabled: true,
-//         requireBase: false
-//     });
-//
-// });
 
 
 

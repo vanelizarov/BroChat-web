@@ -3,15 +3,24 @@
         <div class="col s12 m6 l6 offset-m3 offset-l3">
             <div class="card grey lighten-5">
                 <div class="card-content">
-                    <ul class="collection" id="messages-container">
-                        <li class="collection-item " ng-class="{true: 'blue lighten-2 white-text', false: ''}[senderId == message.senderId]" ng-repeat="message in messages">
-                            <!-- <img src="" alt="?" class="circle"/> -->
-                            <span class="title">{{ message.displayName }} {{ message.dateSent }}</span>
-                            <p class="message-text">
-                                {{ message.text }}
-                            </p>
-                        </li>
-                    </ul>
+                    <div class="row">
+                        <ul class="collection" id="messages-container">
+                            <li class="collection-item " ng-class="{true: 'blue lighten-2 white-text', false: ''}[senderId == message.senderId]" ng-repeat="message in messages">
+                                <!-- <img src="" alt="?" class="circle"/> -->
+                                <span class="title">{{ message.displayName }} {{ message.dateSent }}</span>
+                                <p class="message-text">
+                                    {{ message.text }}
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s9 m10 l10">
+                          <textarea id="message-text" type="text" ng-model="messageText" class="materialize-textarea"></textarea>
+                          <label for="message-text" class="active">Message</label>
+                        </div>
+                        <a id="send-button" class="waves-effect waves-light btn col s3 m2 l2 white-text blue lighten-2" ng-class="{false: '', true: 'disabled'}[messageText == '']">send</a>
+                    </div>
                 </div>
             </div>
         </div>
